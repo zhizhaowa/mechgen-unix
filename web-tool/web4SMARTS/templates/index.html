@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>SMILES + SMARTS Tester</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+
+  <style>
+    body { max-width: 1200px; }
+    .row { display: flex; gap: 16px; align-items: flex-start; }
+    .col { flex: 1; }
+    .svgbox { border: 1px solid #ddd; border-radius: 8px; padding: 8px; background: #fff; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; white-space: pre-wrap; }
+    .kv { margin: 6px 0; }
+    .kv b { display: inline-block; min-width: 170px; }
+  </style>
+</head>
+
+<body>
+  <h2>SMILES + SMARTS Tester</h2>
+
+  <form method="post">
+    <label>SMILES</label>
+    <input name="smiles" value="{{ smiles|e }}">
+
+    <label>SMARTS</label>
+    <input name="smarts" value="{{ smarts|e }}">
+
+    <button type="submit">Run</button>
+  </form>
+
+  {% if result %}
+    <hr>
+    <div class="row">
+      <div class="col">
+        <h3>RDKit</h3>
+        {% set r = result.rdkit %}
+
+        {% if r.error %}
+          <div class="mono">{{ r.error }}</div>
+        {% else %}
+
+          <div class="kv"><b>Canonical SMILES</b> <span class="mono">{{ r.output_can }}</span></div>
+          <div class="kv"><b>InChI</b> <span class="mono">{{ r.output_inchi }}</span></div>
+          <div class="kv"><b>Canonical from InChI</b> <span class="mono">{{ r.output_can_from_inchi }}</span></div>
+          <div class="kv"><b>SMARTS matches</b> <span class="mono" style="color:#b00020;">{{ r.n_matches }}</span></div>
+          <div class="kv"><b>Match Indices</b> <span class="mono">{{ r.smarts_matches|safe }}</span></div>
+
+          <h4>Molecule SVG with Atom Indices</h4>
+          <div class="svgbox">{{ r.svg_index|safe }}</div>
+          <h4>Molecule SVG with Hydrogens</h4>
+          <div class="svgbox">{{ r.svg_h|safe }}</div>
+        {% endif %}
+      </div>
+
+      <div class="col">
+        <h3>Open Babel</h3>
+        {% set o = result.openbabel %}
+
+        {% if o.error %}
+          <div class="mono">{{ o.error }}</div>
+        {% else %}
+
+          <div class="kv"><b>Canonical SMILES</b> <span class="mono">{{ o.output_can }}</span></div>
+          <div class="kv"><b>InChI</b> <span class="mono">{{ o.output_inchi }}</span></div>
+          <div class="kv"><b>Canonical from InChI</b> <span class="mono">{{ o.output_can_from_inchi }}</span></div>
+          <div class="kv"><b>SMARTS matches</b> <span class="mono" style="color:#b00020;">{{ o.n_matches }}</span></div>
+          <div class="kv"><b>Match Indices</b> <span class="mono">{{ o.smarts_matches|safe }}</span></div>
+          
+          <h4>Molecule SVG</h4>
+          <div class="svgbox">{{ o.svg|safe }}</div>
+          <h4>Molecule SVG with Hydrogens</h4>
+          <div class="svgbox">{{ o.svg_h|safe }}</div>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+</body>
+</html>
