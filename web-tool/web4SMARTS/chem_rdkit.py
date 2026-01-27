@@ -83,7 +83,7 @@ def run_rdkit(smiles: str, smarts: str, smirks: str) -> dict:
         if n_pd == 0:
             output["n_products"] = f"No products generated."
         else:
-            output["n_products"] = f"Generated {n_pd} product{'s' if n_pd > 1 else ''} for SMIRKS '{smirks}'."
+            output["n_products"] = f"Generated {n_pd} product{'s' if n_pd > 1 else ''} for SMIRKS:\n  '{smirks}'."
             prod_smiles = []
             prod_svgs = []
             for pset in ps:
@@ -91,7 +91,7 @@ def run_rdkit(smiles: str, smarts: str, smirks: str) -> dict:
                     p = normalized(p)
                     psmi = Chem.MolToSmiles(p, canonical=True)
                     prod_smiles.append(psmi)
-                    psvg = mol_to_svg(p)
+                    psvg = mol_to_svg(p, add_h=True)
                     prod_svgs.append(psvg)
             output["product_smiles"] = "\n".join(prod_smiles)
             output["product_svgs"] = prod_svgs
