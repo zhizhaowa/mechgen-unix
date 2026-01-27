@@ -59,5 +59,11 @@ def svg():
 
 
 if __name__ == "__main__":
+
     app.run(host="0.0.0.0", port=5000)
+    
+    # Local host only
     # app.run(host="127.0.0.1", port=5000)
+
+    # nohup python3 web4draw.py > web4draw.log 2>&1 &
+    # gunicorn web4draw:app --bind 0.0.0.0:5000 --workers 1 --timeout 120 --access-logfile web4draw.access.log --error-logfile web4draw.error.log &

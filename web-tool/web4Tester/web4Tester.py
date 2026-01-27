@@ -41,5 +41,9 @@ def rdk():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5005)
+    
     # Localhost
     # app.run(host="127.0.0.1", port=5005)
+
+    # nohup python3 web4Tester.py > web4Tester.log 2>&1 &
+    # nohup gunicorn web4Tester:app --bind 0.0.0.0:5005 --workers 1 --timeout 120 --access-logfile web4Tester.access.log --error-logfile web4Tester.error.log &
