@@ -90,12 +90,12 @@
             </div>
 
             {% if r.product_smiles %}
-              <div class="kv"><b>Product SMILES</b></div>
+              <div class="kv"><b>- SMILES</b></div>
               <div class="mono">{{ r.product_smiles }}</div>
             {% endif %}
 
             {% if r.product_svgs and r.product_svgs|length > 0 %}
-              <h4>Products</h4>
+              <h4>- SVG</h4>
               <div class="wrap">
                 {% for svg in r.product_svgs %}
                   <div class="svgbox w260">{{ svg|safe }}</div>
