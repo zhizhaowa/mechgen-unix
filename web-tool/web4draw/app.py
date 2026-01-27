@@ -8,41 +8,56 @@ from flask import Flask, request, Response
 from rdkit import Chem
 from rdkit.Chem import rdDepictor
 from rdkit.Chem.Draw import rdMolDraw2D
+from openbabel import openbabel as ob
 
 app = Flask(__name__)
 
 rdDepictor.SetPreferCoordGen(True)
 
+
 @app.get("/svg")
 def svg():
     """Generates an SVG image from a SMILES string."""
 
-    smiles = request.args.get("smiles", "")  # Get SMILES
+    smiles = request.args.get("smiles", "").strip()
     with_h = request.args.get("w_h", "0") == "1"
+    use_ob = True
 
-    mol = Chem.MolFromSmiles(smiles)  # Convert SMILES to molecule
-    if mol is None:
-        return Response(f"Invalid SMILES input: '{smiles}'", status=400)
+    if not smiles:
+        return Response("Missing 'smiles' parameter.", status=400)
 
-    if with_h:
-        mol = Chem.AddHs(mol)
+    if use_ob:  # OpenBabel version
+        conv = ob.OBConversion()
+        conv.SetInAndOutFormats("smi", "svg")
 
-    # rdDepictor.Compute2DCoords(mol)  # Compute 2D coordinates
-    # AllChem.Compute2DCoords(mol)
+        mol = ob.OBMol()
+        if not conv.ReadString(mol, smiles):
+            return Response(f"Invalid SMILES input: '{smiles}'", status=400)
 
-    # Single molecule
-    # svg_txt = Draw.MolToSVG(mol, 360, 260)
-    # Multiple molecules
-    # svg_txt = Draw.MolsToGridImage([mol], molsPerRow=1, subImgSize=(360, 260), useSVG=True)
+        if with_h:
+            mol.AddHydrogens()
 
-    rdDepictor.Compute2DCoords(mol, canonOrient=True)
-    drawer = rdMolDraw2D.MolDraw2DSVG(360, 260)
-    drawer.DrawMolecule(mol)
-    drawer.FinishDrawing()
+        svg_text = conv.WriteString(mol)
 
-    #return Response(svg_txt, mimetype="image/svg+xml")
-    return Response(drawer.GetDrawingText(), mimetype="image/svg+xml")
+    else:  # RDKit version
+        mol = Chem.MolFromSmiles(smiles)
+        if mol is None:
+            return Response(f"Invalid SMILES input: '{smiles}'", status=400)
+
+        if with_h:
+            mol = Chem.AddHs(mol)
+
+        rdDepictor.Compute2DCoords(mol, canonOrient=True)
+        drawer = rdMolDraw2D.MolDraw2DSVG(360, 260)
+        drawer.DrawMolecule(mol)
+        drawer.FinishDrawing()
+        svg_text = drawer.GetDrawingText()
+
+    if not svg_text:
+        return Response("Failed to generate SVG.", status=500)
+    return Response(svg_text, mimetype="image/svg+xml")
+
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
-    # app.run(host="127.0.0.1", post=5000)
+    # app.run(host="0.0.0.0", port=5000)
+    app.run(host="127.0.0.1", port=5000)
