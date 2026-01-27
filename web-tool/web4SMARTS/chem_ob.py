@@ -34,10 +34,6 @@ def run_openbabel(smiles: str, smarts: str) -> dict:
     if mol is None:
         return {"error": f"Invalid SMILES input: '{smiles}'"}
 
-    patt = ob.OBSmartsPattern()
-    if not patt.Init(smarts):
-        return {"error": f"Invalid SMARTS input: '{smarts}'"}
-
     output = {}
 
     # Add canonical SMILES and InChI
@@ -49,6 +45,11 @@ def run_openbabel(smiles: str, smarts: str) -> dict:
     # Add drawing SVG: plain, with hydrogens, and with indices
     output["svg"] = mol_to_svg(mol)
     output["svg_h"] = mol_to_svg(mol, add_h=True)
+
+    # SMARTS matching
+    patt = ob.OBSmartsPattern()
+    if not patt.Init(smarts):
+        return output
 
     # Find substructure matches
     matches = []

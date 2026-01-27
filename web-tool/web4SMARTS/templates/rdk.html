@@ -1,0 +1,115 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>RDKit Tester</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+
+  <style>
+    body { max-width: 1200px; }
+    .row { display: flex; gap: 20px; align-items: flex-start; }
+    .col { flex: 1; min-width: 0; }
+
+    .svgbox {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 8px;
+      background: #fff;
+    }
+
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      white-space: pre-wrap;
+    }
+
+    .kv { margin: 6px 0; }
+    .kv b { display: inline-block; min-width: 170px; }
+
+    .wrap { display: flex; gap: 12px; flex-wrap: wrap; }
+    .w260 { width: 260px; }
+  </style>
+</head>
+
+<body>
+  <h2>RDKit: SMILES + SMARTS + SMIRKS Tester</h2>
+  <p class="mono"><a href="/">RDKit + Open Babel -> here</a></p>
+
+  <form method="post">
+    <label>SMILES</label>
+    <input name="smiles" value="{{ smiles|e }}">
+
+    <label>SMARTS (optional)</label>
+    <input name="smarts" value="{{ smarts|e }}">
+
+    <label>SMIRKS (optional)</label>
+    <input name="smirks" value="{{ smirks|e }}">
+
+    <button type="submit">Run</button>
+  </form>
+
+  {% if r %}
+    <hr>
+
+    {% if r.error %}
+      <div class="mono">{{ r.error }}</div>
+    {% else %}
+
+      <div class="row">
+
+        <!-- LEFT: SMILES + SMARTS -->
+        <div class="col">
+          <h3>SMILES / SMARTS</h3>
+
+          <div class="kv"><b>Canonical SMILES</b>
+            <span class="mono">{{ r.output_can }}</span>
+          </div>
+
+          {% if r.n_matches %}
+            <div class="kv"><b>SMARTS matches</b>
+              <span class="mono" style="color:#b00020;">{{ r.n_matches }}</span>
+            </div>
+          {% endif %}
+
+          {% if r.smarts_matches %}
+            <div class="kv"><b>Match Indices</b>
+              <span class="mono">{{ r.smarts_matches }}</span>
+            </div>
+          {% endif %}
+
+          <h4>Molecule (atom indices)</h4>
+          <div class="svgbox">{{ r.svg_index|safe }}</div>
+        </div>
+
+        <!-- RIGHT: SMIRKS -->
+        <div class="col">
+          <h3>SMIRKS</h3>
+
+          {% if smirks %}
+            <div class="kv"><b>Products</b>
+              <span class="mono" style="color:#b00020;">{{ r.n_products }}</span>
+            </div>
+
+            {% if r.product_smiles %}
+              <div class="kv"><b>Product SMILES</b></div>
+              <div class="mono">{{ r.product_smiles }}</div>
+            {% endif %}
+
+            {% if r.product_svgs and r.product_svgs|length > 0 %}
+              <h4>Products</h4>
+              <div class="wrap">
+                {% for svg in r.product_svgs %}
+                  <div class="svgbox w260">{{ svg|safe }}</div>
+                {% endfor %}
+              </div>
+            {% endif %}
+          {% else %}
+            <div class="mono">No SMIRKS provided.</div>
+          {% endif %}
+        </div>
+
+      </div>
+
+    {% endif %}
+  {% endif %}
+</body>
+</html>

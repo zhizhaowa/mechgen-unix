@@ -18,15 +18,21 @@
 </head>
 
 <body>
-  <h2>SMILES + SMARTS Tester</h2>
+  <h2>SMILES + SMARTS + SMIRKS Tester</h2>
+  <p class="mono">
+  <a href="/rdk">RDKit-only -> here</a>
+  </p>
 
   <form method="post">
     <label>SMILES</label>
     <input name="smiles" value="{{ smiles|e }}">
 
-    <label>SMARTS</label>
+    <label>SMARTS (optional)</label>
     <input name="smarts" value="{{ smarts|e }}">
 
+    <label>SMIRKS (optional)</label>
+    <input name="smirks" value="{{ smirks|e }}">
+    
     <button type="submit">Run</button>
   </form>
 
@@ -51,6 +57,25 @@
           <div class="svgbox">{{ r.svg_index|safe }}</div>
           <h4>Molecule SVG with Hydrogens</h4>
           <div class="svgbox">{{ r.svg_h|safe }}</div>
+
+          {% if smirks %}
+            <hr>
+            <div class="kv"><b>SMIRKS products</b> <span class="mono" style="color:#b00020;">{{ r.n_products }}</span></div>
+
+            {% if r.product_smiles %}
+              <div class="kv"><b>Product SMILES</b></div>
+              <div class="mono">{{ r.product_smiles }}</div>
+            {% endif %}
+
+            {% if r.product_svgs and r.product_svgs|length > 0 %}
+              <h4>Product SVG</h4>
+              <div class="row" style="flex-wrap: wrap;">
+                {% for svg in r.product_svgs %}
+                  <div class="svgbox" style="width: 260px;">{{ svg|safe }}</div>
+                {% endfor %}
+              </div>
+            {% endif %}
+          {% endif %}
         {% endif %}
       </div>
 
