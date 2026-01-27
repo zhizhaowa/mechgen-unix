@@ -1,6 +1,6 @@
 from rdkit import Chem
 from rdkit.Chem.Draw import rdMolDraw2D
-from rdkit.Chem import rdDepictor, AllChem
+from rdkit.Chem import rdDepictor, AllChem, inchi
 
 def normalized(m):
     m2 = Chem.Mol(m)
@@ -30,10 +30,11 @@ def run_rdkit(smiles: str, smarts: str, smirks: str) -> dict:
 
      # Add canonical SMILES and InChI
     can = Chem.MolToSmiles(mol, canonical=True)
-    inchi = Chem.MolToInchi(mol)
-    can_from_inchi = Chem.MolToSmiles(Chem.MolFromInchi(inchi), canonical=True) if inchi else ""
+    #inc = Chem.MolToInchi(mol)
+    inc = inchi.MolToInchi(mol)
+    can_from_inchi = Chem.MolToSmiles(Chem.MolFromInchi(inc), canonical=True) if inc else ""
     output["output_can"] = can
-    output["output_inchi"] = inchi
+    output["output_inchi"] = inc
     output["output_can_from_inchi"] = can_from_inchi
 
     # Add drawing SVG: plain, with hydrogens, and with indices
