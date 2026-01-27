@@ -63,7 +63,11 @@ def run_rdkit(smiles: str, smarts: str, smirks: str) -> dict:
 
     # Process SMIRKS if provided
     if smirks:
-        rxn = AllChem.ReactionFromSmarts(smirks)
+        try:
+            rxn = AllChem.ReactionFromSmarts(smirks)
+        except Exception as e:
+            output["error"] = f"Invalid SMIRKS input: '{smirks}'"
+            return output
         if not rxn:
             output["error"] = f"Invalid SMIRKS input: '{smirks}'"
             return output
