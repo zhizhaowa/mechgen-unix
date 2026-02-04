@@ -5,6 +5,7 @@ Generates SVG images from SMILES using RDKit.
 """
 
 from flask import Flask, request, Response
+from urllib.parse import unquote
 from rdkit import Chem
 from rdkit.Chem import rdDepictor
 from rdkit.Chem.Draw import rdMolDraw2D
@@ -19,7 +20,8 @@ rdDepictor.SetPreferCoordGen(True)
 def svg():
     """Generates an SVG image from a SMILES string."""
 
-    smiles = request.args.get("smiles", "").strip()
+    smiles_raw = request.args.get("smiles", "").strip()
+    smiles = unquote(smiles_raw)  # Decode URL-encoded SMILES
     with_h = request.args.get("w_h", "0") == "1"
     use_ob = True
 
