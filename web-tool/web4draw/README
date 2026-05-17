@@ -1,0 +1,5 @@
+nohup gunicorn web4draw:app --bind 0.0.0.0:5000 --workers 1 --timeout 120 --access-logfile web4draw.access.log --error-logfile web4draw.error.log &
+
+lsof -i :5000
+
+ps -fp 1082533,1082534

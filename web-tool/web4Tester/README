@@ -1,0 +1,9 @@
+pip install gunicorn --break-system-packages
+pip install flask --break-system-packages
+pip install rdkit --break-system-packages
+
+pip install openbabel-wheel --break-system-packages
+
+
+
+nohup gunicorn web4Tester:app --bind 0.0.0.0:5005 --workers 1 --timeout 120 --access-logfile web4Tester.access.log --error-logfile web4Tester.error.log &
